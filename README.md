@@ -6,7 +6,7 @@
 | 이름 | GitHub | 역할 |
 |---|---|---|
 | 류승익 | [@ryukevin](https://github.com/ryukevin) | 모델 설계·학습, 코드 통합 |
-| 이효민 | @아이디 | 데이터 수집·전처리 |
+| 이효민 | [@hyoyu0309](https://github.com/hyoyu0309) | 데이터 수집·전처리 |
 | 주상우 | @아이디 | 베이스라인·시연 프로토타입 |
 | 차희태 | [@ckgmlxo2002](https://github.com/ckgmlxo2002) | 실험 분석·자료 조사 |
 
