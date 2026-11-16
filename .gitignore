@@ -1,0 +1,22 @@
+# AI Hub 원본·가공 데이터는 재배포 제한 → 절대 커밋하지 않는다
+data/
+checkpoints/
+*.wav
+*.zip
+
+# 결과 중 큰 파일 (점수표 CSV는 커밋해도 됨)
+results/**/*.pt
+results/**/*.bin
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# 기타
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
