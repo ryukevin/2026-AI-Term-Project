@@ -61,7 +61,7 @@ GitHub: `ryukevin/2026-AI-Term-Project`
 | 종류 | 일상 대화 | `st_` 따라말하기(대본), `say_` 질문에 답하기, `talk_` 2인 대화 |
 | 기타 | `eojeolList[].isDialect` 있음 | 강원도 zip(TL_01/VL_01)은 쓰지 않음 |
 
-- **음성(원천데이터 wav)은 아직 어느 PC에도 없다.** 라벨만 받은 상태. Whisper CER 측정하려면 원천데이터를 받아 `data/raw/audio/`에 넣는다 (파일 이름 = JSON 이름).
+- **음성(원천데이터 wav)은 아직 어느 PC에도 없다.** 라벨만 받은 상태. Whisper CER 측정하려면 원천데이터 zip을 풀지 않고 `data/raw/audio/`에 넣는다 (wav 이름 = JSON 이름으로 짝을 찾음). 가짜 음성으로 zip 안 wav 매칭, 구간 자르기, 리샘플링까지 확인함 (11/16).
 - 014의 `standard_form`은 방언 어휘만 고친 수준이라 "쪼끔, 같애요" 같은 구어는 그대로 남아 있다. 중·노년층 `standard`에는 오타가 가끔 있다.
 - **AI Hub 원본은 재배포 제한이 있다.** `data/`는 `.gitignore`에 넣고, 제출 ZIP에도 포함하지 않는다.
 
@@ -131,7 +131,7 @@ GitHub: `ryukevin/2026-AI-Term-Project`
 - [x] `compare_mt.py`, `src/translate.py` (코드만. 모델 실제 실행은 아직)
 
 남은 일
-1. **Whisper CER**: 원천 음성 wav를 받은 뒤 `--n 30` 실행. 표준어 기준 CER도 같이 본다.
+1. **Whisper CER**: 음성이 있는 다른 PC에서 `scripts\run_whisper.bat` 실행 (안내: `docs/음성작업_인수인계.md`). 음성 zip은 풀지 않아도 되고 일부만 받아도 된다. 결과 `results/whisper_cer_*.csv`가 올라오면 판단 기준으로 음성 기능 포함 여부를 정한다.
 2. **번역 모델 비교**: Kevin PC(3060 Ti)에서 `compare_mt.py --from_pairs data/pairs/test.csv --n 25` → 주상우가 zh 정답 채움 → 재실행 → 모델 확정
 3. **A 조건 점수**: 평가 세트(`data/eval/eval_set.csv`)가 나오면 바로 `evaluate.py --translate`
 4. 평가 세트가 나오면 `build_pairs.py` 다시 실행 (평가 문장을 학습 데이터에서 제외)

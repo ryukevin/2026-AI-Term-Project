@@ -56,11 +56,12 @@ python scripts/build_pairs.py
 → `data/pairs/train.csv, valid.csv, test.csv, train_50k.csv, build_log.txt(필터 단계별 개수)`
 평가 세트(`data/eval/*.csv`)가 생기면 **다시 실행**해서 평가 문장을 학습 데이터에서 빼야 한다.
 
-### 3. Whisper CER (음성 wav 필요)
+### 3. Whisper CER (음성 필요)
+AI Hub 원천데이터(음성) zip을 풀지 않고 `data/raw/audio/`에 넣은 뒤 실행한다. 자세한 내용은 [docs/음성작업_인수인계.md](docs/음성작업_인수인계.md)에 있다.
 ```bash
-python scripts/whisper_cer_aihub.py --label_dir data/raw/dialect_gs --audio_dir data/raw/audio --n 30 --tag dialect
+scripts\run_whisper.bat
 ```
-→ `results/whisper_cer_dialect.csv`, `results/whisper_cer_summary.csv`
+→ `results/whisper_cer_dialect.csv`, `whisper_cer_elder.csv`, `whisper_cer_summary.csv`
 
 ### 4. 번역 모델 고르기 (NLLB 1.3B vs MADLAD 3B)
 ```bash

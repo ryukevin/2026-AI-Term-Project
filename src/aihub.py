@@ -56,23 +56,43 @@ def _load_bytes(b: bytes):
     return None
 
 
-def iter_json(paths) -> Iterator[tuple[str, str, dict | None]]:
-    """(원본경로, json이름, 파싱결과) 를 돌려준다. 파싱 실패하면 dict 대신 None."""
+def _label_files(paths) -> list[Path]:
     if isinstance(paths, (str, Path)):
         paths = [paths]
+    files = []
     for p in map(Path, paths):
-        if p.is_dir():
-            files = sorted(list(p.rglob("*.zip")) + list(p.rglob("*.json")))
-        else:
-            files = [p]
-        for f in files:
-            if f.suffix.lower() == ".zip":
-                with zipfile.ZipFile(f) as z:
-                    for name in sorted(z.namelist()):
-                        if name.lower().endswith(".json"):
-                            yield str(f), name, _load_bytes(z.read(name))
-            elif f.suffix.lower() == ".json":
-                yield str(f), f.name, _load_bytes(f.read_bytes())
+        files += sorted(list(p.rglob("*.zip")) + list(p.rglob("*.json"))) if p.is_dir() else [p]
+    return files
+
+
+def iter_json(paths, only: set | None = None) -> Iterator[tuple[str, str, dict | None]]:
+    """(원본경로, json이름, 파싱결과) 를 돌려준다. 파싱 실패하면 dict 대신 None.
+    only: 이 이름(확장자 없음)들만 읽는다. 음성이 있는 라벨만 빨리 고를 때 쓴다."""
+    for f in _label_files(paths):
+        if f.suffix.lower() == ".zip":
+            with zipfile.ZipFile(f) as z:
+                for name in sorted(z.namelist()):
+                    if not name.lower().endswith(".json"):
+                        continue
+                    if only is not None and Path(name).stem not in only:
+                        continue
+                    yield str(f), name, _load_bytes(z.read(name))
+        elif f.suffix.lower() == ".json":
+            if only is not None and f.stem not in only:
+                continue
+            yield str(f), f.name, _load_bytes(f.read_bytes())
+
+
+def list_json_stems(paths) -> list[str]:
+    """JSON을 열지 않고 이름만 모은다 (zip 목록만 읽어서 빠름)."""
+    stems = []
+    for f in _label_files(paths):
+        if f.suffix.lower() == ".zip":
+            with zipfile.ZipFile(f) as z:
+                stems += [Path(n).stem for n in z.namelist() if n.lower().endswith(".json")]
+        elif f.suffix.lower() == ".json":
+            stems.append(f.stem)
+    return stems
 
 
 def detect_format(d: dict) -> str | None:
