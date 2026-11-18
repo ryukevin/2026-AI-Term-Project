@@ -42,7 +42,13 @@ class Translator:
         self.kind = "madlad" if "madlad" in self.name.lower() else "nllb"
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         if dtype == "auto":
-            dtype = "fp16" if self.device == "cuda" else "fp32"
+            if self.device != "cuda":
+                dtype = "fp32"
+            elif self.kind == "madlad" and torch.cuda.is_bf16_supported():
+                # MADLAD(T5 계열)는 fp16에서 값이 넘쳐 빈 번역이 나올 수 있어서 bf16 사용 (RTX 30xx 지원)
+                dtype = "bf16"
+            else:
+                dtype = "fp16"
 
         kw = {}
         if dtype == "int8":

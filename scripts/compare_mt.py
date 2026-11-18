@@ -32,7 +32,7 @@ def pick_sentences(pairs_csv: str, n: int, seed: int) -> pd.DataFrame:
     df = pd.read_csv(pairs_csv)
     # 너무 짧거나 긴 문장 제외, 데이터셋 골고루
     df = df[(df.n_eojeol >= 5) & (df.n_eojeol <= 20)]
-    per = max(1, n // df.dataset.nunique())
+    per = -(-n // df.dataset.nunique())   # 올림: n=25, 데이터셋 2개면 13개씩 뽑고 25개로 자름
     pick = df.groupby("dataset", group_keys=False).apply(lambda g: g.sample(min(per, len(g)), random_state=seed))
     pick = pick.head(n)
     return pd.DataFrame({"id": pick.id, "standard": pick.standard, "zh": ""})

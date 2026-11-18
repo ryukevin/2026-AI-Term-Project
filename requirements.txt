@@ -1,6 +1,7 @@
-# torch는 GPU(CUDA) 버전을 먼저 따로 설치한다. 예 (CUDA 12.x):
+# Keep this file ASCII only: pip fails to read non-ASCII text on Korean Windows (cp949).
+# Install the GPU (CUDA) build of torch first. Example (CUDA 12.x):
 #   pip install torch --index-url https://download.pytorch.org/whl/cu128
-# 그 다음:
+# Then:
 #   pip install -r requirements.txt
 torch
 transformers>=4.44
@@ -13,8 +14,8 @@ pandas
 tqdm
 soundfile
 librosa
-# 2주차 KoBART 학습용
+# For KoBART training (week 2)
 datasets
-# 메모리가 부족할 때만
+# Only when memory is short
 # peft
 # bitsandbytes
