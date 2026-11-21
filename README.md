@@ -70,6 +70,32 @@ python scripts/compare_mt.py --from_pairs data/pairs/test.csv --n 25
 → `data/eval/mt_pilot.csv`의 zh 칸을 원어민이 채운 뒤 `python scripts/compare_mt.py` 로 다시 실행하면 chrF까지 나온다.
 한 번 고른 모델과 디코딩 설정(`src/translate.py`의 `DECODE`)은 끝까지 바꾸지 않는다.
 
+### 4-1. 정규화 모델 학습 (KoBART, 2주차)
+```bash
+# 먼저 짧게 돌려서 끝까지 도는지 확인
+python scripts/train_normalizer.py --limit 2000 --epochs 1 --out checkpoints/smoke
+# 본 학습 (data/pairs/train_50k.csv)
+python scripts/train_normalizer.py
+```
+→ `checkpoints/kobart_norm/best/`(모델 + `norm_config.json`), `train_log.csv`, `valid_samples_best.csv`
+평가할 때마다 "입력을 그대로 복사했을 때" 점수를 같이 출력한다. 모델 chrF가 이보다 높아야 실제로 고친 것이다.
+메모리가 부족하면 `--batch 8 --grad_accum 2`. `checkpoints/`는 git에 안 올라가므로 팀 공유는 드라이브로 한다.
+
+### 4-2. B 조건 입력 만들기
+```bash
+python scripts/predict_normalizer.py --input data/eval/eval_set.csv --out results/kobart_pred.csv
+python scripts/predict_normalizer.py --input data/pairs/test.csv --n 2000 --out results/norm_test_pred.csv   # 평가 세트 전
+python scripts/predict_normalizer.py --text "니 밥 뭇나" "어데 가노"                                          # 직접 넣어 보기
+```
+`results/kobart_pred.csv`를 아래 `evaluate.py --pred`로 넣으면 B 조건이 된다.
+AI Hub 문장이 들어 있는 예측 CSV(`norm_test_pred.csv` 등)는 커밋하지 않는다.
+
+### 4-3. 파이프라인 한 번에 (데모용)
+```bash
+python -m src.pipeline "니 밥 뭇나" --tgt zh --compare     # 표준어, 번역, 사투리 직접 번역(A)까지
+```
+Gradio 데모는 `from src.pipeline import Pipeline` → `Pipeline().run(text, tgt, compare=True)`를 쓴다.
+
 ### 5. A/B/C 평가
 `data/eval/eval_set.csv` 열: `id, dialect, standard, zh` (+ B 조건용 `pred_standard`)
 ```bash
