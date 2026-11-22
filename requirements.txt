@@ -19,3 +19,7 @@ datasets
 # Only when memory is short
 # peft
 # bitsandbytes
+# Demo and Excel export
+gradio
+openpyxl
+matplotlib

@@ -20,3 +20,6 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+
+# AI Hub 샘플 (공유 허락 범위 확인 전까지 커밋하지 않음)
+data_sample/

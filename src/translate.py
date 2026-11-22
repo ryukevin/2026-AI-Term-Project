@@ -66,9 +66,13 @@ class Translator:
             self.model.to(self.device)
         self.model.eval()
 
-    def translate(self, sents: list[str], tgt: str = "zh", batch_size: int = 8,
+    def translate(self, sents: list[str], tgt: str = "zh", batch_size: int = 2,
                   decode: dict | None = None) -> tuple[list[str], float]:
-        """번역 결과 리스트와 총 소요 시간(초)을 돌려준다."""
+        """번역 결과 리스트와 총 소요 시간(초)을 돌려준다.
+
+        batch_size 기본값 2: MADLAD는 사투리 문장에서 같은 말을 반복하며 최대 길이(256토큰)까지 생성하는 일이 많다.
+        8문장씩 묶으면 8GB GPU가 넘쳐서 8문장에 377초, 2문장씩이면 18초였다 (11/22 측정).
+        """
         import torch
 
         decode = {**DECODE, **(decode or {})}
@@ -86,4 +90,6 @@ class Translator:
             with torch.inference_mode():
                 gen = self.model.generate(**enc, **extra, **decode)
             outs.extend(self.tok.batch_decode(gen, skip_special_tokens=True))
+            if self.model.device.type == "cuda":
+                torch.cuda.empty_cache()
         return [o.strip() for o in outs], time.time() - t0
