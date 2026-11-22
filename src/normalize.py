@@ -61,8 +61,12 @@ def pad_batch(seqs: list[list[int]], pad_id: int, label: bool = False):
 
 
 def generate(model, tok, texts: list[str], max_len: int, prefix: str = "",
-             batch_size: int = 32, decode: dict | None = None) -> list[str]:
-    """학습 중 검증과 추론에서 같이 쓰는 생성 함수"""
+             batch_size: int = 16, decode: dict | None = None) -> list[str]:
+    """학습 중 검증과 추론에서 같이 쓰는 생성 함수
+
+    빔 서치는 문장 길이에 따라 잡는 메모리 크기가 달라서, 묶음을 계속 돌리면 GPU 캐시가 쌓인다.
+    8GB GPU에서 다른 프로그램(화면, 조명 프로그램 등)과 합쳐 넘치면 수십 배 느려지므로 묶음마다 캐시를 비운다 (11/22 확인).
+    """
     import torch
 
     decode = {**NORM_DECODE, **(decode or {})}
@@ -80,6 +84,8 @@ def generate(model, tok, texts: list[str], max_len: int, prefix: str = "",
         with torch.inference_mode():
             gen = model.generate(input_ids=ids.to(dev), attention_mask=mask.to(dev), **extra, **decode)
         outs.extend(s.strip() for s in tok.batch_decode(gen, skip_special_tokens=True))
+        if dev.type == "cuda":
+            torch.cuda.empty_cache()
     return outs
 
 

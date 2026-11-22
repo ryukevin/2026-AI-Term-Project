@@ -96,6 +96,15 @@ python -m src.pipeline "니 밥 뭇나" --tgt zh --compare     # 표준어, 번�
 ```
 Gradio 데모는 `from src.pipeline import Pipeline` → `Pipeline().run(text, tgt, compare=True)`를 쓴다.
 
+### 4-4. 2주차 한 번에 돌리기 / 데모
+- `scripts\run_week2.bat` (더블클릭): 학습쌍 요약 엑셀 → 정규화 모델 학습 → test 2000문장 변환 점수 → test 100쌍 A/B/C 중국어 번역 엑셀
+  → `results/데이터쌍_정리.xlsx`, `results/번역확인_test.xlsx`, `results/week2_log.txt` (AI Hub 문장 포함 → 커밋 금지)
+- 나눠서 학습: `scripts\run_week2.bat --max_minutes 30` 처럼 시간을 주면 그만큼 학습하고 저장 후 멈춘다. Ctrl+C로 멈춰도 저장된다.
+  다시 실행하면 멈춘 곳부터 이어서 하고, 학습이 다 끝난 실행에서 변환 점수와 A/B/C 번역으로 넘어간다.
+  학습만 따로: `python scripts/train_normalizer.py --max_minutes 30` → `python scripts/train_normalizer.py --resume`
+- `scripts\run_demo.bat` (더블클릭): Gradio 데모 `app.py` 실행 → 브라우저 `http://127.0.0.1:7860`
+- 따로 돌릴 때: `python scripts/export_pairs_xlsx.py`, `python scripts/translate_pairs.py`, `python app.py --share`
+
 ### 5. A/B/C 평가
 `data/eval/eval_set.csv` 열: `id, dialect, standard, zh` (+ B 조건용 `pred_standard`)
 ```bash
